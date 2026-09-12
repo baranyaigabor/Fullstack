@@ -40,6 +40,6 @@
     "prod:tunnel:logs": "node infrastructure/compose.mjs production --profile tunnel logs tunnel_setup cloudflared"
   },
   "devDependencies": {
-    "prettier": "^3.8.3"
+    "prettier": "^3.9.6"
   }
 }
