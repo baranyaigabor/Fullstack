@@ -1,0 +1,45 @@
+{
+  "name": "fullstack-starter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.8.0",
+  "workspaces": [
+    "backend",
+    "frontend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "pnpm build:shared && pnpm --parallel --filter @fullstack-starter/shared --filter @fullstack-starter/backend --filter @fullstack-starter/frontend dev",
+    "dev:backend": "pnpm --filter @fullstack-starter/backend dev",
+    "dev:frontend": "pnpm --filter @fullstack-starter/frontend dev",
+    "prod": "pnpm build && pnpm --parallel --filter @fullstack-starter/backend --filter @fullstack-starter/frontend start",
+    "build": "pnpm build:shared && pnpm --filter @fullstack-starter/backend build && pnpm --filter @fullstack-starter/frontend lint && pnpm --filter @fullstack-starter/frontend build",
+    "build:shared": "pnpm --filter @fullstack-starter/shared build",
+    "typecheck": "pnpm build:shared && pnpm --filter @fullstack-starter/backend typecheck && pnpm --filter @fullstack-starter/frontend typecheck",
+    "lint": "pnpm --filter @fullstack-starter/frontend lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:generate": "pnpm --filter @fullstack-starter/backend db:generate",
+    "db:push": "pnpm --filter @fullstack-starter/backend db:push",
+    "test": "pnpm test:unit && pnpm test:cloudflare",
+    "test:unit": "pnpm build:shared && pnpm --filter @fullstack-starter/backend build && node --test backend/test/*.test.mjs infrastructure/compose.test.mjs",
+    "test:cloudflare": "node --test infrastructure/cloudflare-tunnel.test.mjs",
+    "dev:up": "node infrastructure/compose.mjs development up --detach --wait",
+    "dev:rebuild": "node infrastructure/compose.mjs development up --build --detach --wait",
+    "dev:down": "node infrastructure/compose.mjs development down",
+    "dev:logs": "node infrastructure/compose.mjs development logs",
+    "dev:tunnel:up": "node infrastructure/compose.mjs development --profile tunnel up --build --detach --wait",
+    "dev:tunnel:down": "node infrastructure/compose.mjs development --profile tunnel down",
+    "dev:tunnel:logs": "node infrastructure/compose.mjs development --profile tunnel logs tunnel_setup cloudflared",
+    "prod:up": "node infrastructure/compose.mjs production up --build --detach --wait",
+    "prod:down": "node infrastructure/compose.mjs production down",
+    "prod:logs": "node infrastructure/compose.mjs production logs",
+    "prod:tunnel:up": "node infrastructure/compose.mjs production --profile tunnel up --build --detach --wait",
+    "prod:tunnel:down": "node infrastructure/compose.mjs production --profile tunnel down",
+    "prod:tunnel:logs": "node infrastructure/compose.mjs production --profile tunnel logs tunnel_setup cloudflared"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.3"
+  }
+}
