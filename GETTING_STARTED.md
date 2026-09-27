@@ -29,8 +29,25 @@ The fallback identity hashes the checkout path so equal folder names are distinc
 `APP_NAME` is the common display name. `APP_URL` optionally specifies a public
 origin. `DEV_APP_DOMAIN`/`PROD_APP_DOMAIN` override `APP_DOMAIN`; a configured
 domain yields HTTPS URLs. The Compose wrapper derives auth, API host configuration,
-encoded database credentials, profiles, and public branding. For extra exact web
-origins, set comma-separated `TRUSTED_ORIGINS` (include the port). Avoid wildcards.
+encoded database credentials, profiles, and public branding.
+
+Host port bindings are configured in `.env`. `DEV_BIND_ADDRESS` controls the
+development web proxy, `DEV_INTERNAL_BIND_ADDRESS` controls the direct frontend,
+backend, database, cache, and optional development service ports, and
+`PROD_BIND_ADDRESS` controls the production web proxy. They default to `127.0.0.1`.
+To open development from another device, set `DEV_BIND_ADDRESS=0.0.0.0` and set
+`APP_URL` to an address that device can reach, such as
+`http://192.168.1.10:8080`; then recreate the proxy with `pnpm dev:services:up`.
+`0.0.0.0` is a bind address, not a browser URL. Leave
+`DEV_INTERNAL_BIND_ADDRESS` on loopback unless you deliberately need direct
+network access to those development services. If you do, use `0.0.0.0` so
+host-side tools can still connect through localhost; exposing direct backend or
+data ports bypasses the proxy and requires your own network controls. For
+production, keep the proxy on loopback when using the Cloudflare tunnel, or set
+`PROD_BIND_ADDRESS` to the intended host interface behind a trusted TLS ingress
+and configure the public `APP_DOMAIN` or `APP_URL` separately.
+
+For extra exact web origins, set comma-separated `TRUSTED_ORIGINS` (include the port). Avoid wildcards.
 Use `NEXT_PUBLIC_API_URL` for a separate API origin and optionally
 `NEXT_PUBLIC_AUTH_URL` for a separate auth endpoint. Public settings are bundled
 at frontend build time. Rebuild after changing them in production.

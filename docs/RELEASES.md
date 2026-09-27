@@ -44,9 +44,13 @@ ClamAV's verified 1.5.4 Docker image is AMD64-only, so its optional profile uses
 explicit emulation on ARM hosts. Other selected service images support ARM.
 Do not expose the internal tunnel listener (8081) publicly: it trusts Cloudflare's
 client-IP header. Published listener 80 overwrites forwarded client headers.
-Only proxy 80 is published in production, on loopback by default. For another
-trusted TLS ingress, route it to the internal listener on a protected network and
-review its source/header trust model.
+Only proxy 80 is published in production. `PROD_BIND_ADDRESS` selects its
+host interface and defaults to loopback. A Cloudflare tunnel does not require a
+public host bind. For another trusted TLS ingress, set `PROD_BIND_ADDRESS` to the
+interface that ingress can reach and route it to the published proxy port.
+Keep listener 8081 private because it trusts Cloudflare's client-IP header.
+Set `APP_DOMAIN` or `APP_URL` to the client-visible HTTPS origin separately;
+a bind address is not a browser URL.
 
 The Expo app can be built for iOS and Android with EAS after connecting an Expo
 account and configuring store signing. See [EXPO.md](./EXPO.md).
