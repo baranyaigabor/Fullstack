@@ -8,7 +8,7 @@ module.exports = {
     appId: config.bundleId,
     productName: config.appName,
     executableName: config.appId,
-    extraMetadata: { name: config.appId, version: config.appVersion },
+    extraMetadata: { name: config.appId, version: config.appVersion, homepage: config.webUrl },
     directories: { output: 'out' },
     files: ['src/**', 'renderer/**', '.generated/config.json', 'package.json'],
     asar: true,

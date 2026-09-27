@@ -1,14 +1,4 @@
-import {
-    cpSync,
-    existsSync,
-    mkdirSync,
-    mkdtempSync,
-    readFileSync,
-    readdirSync,
-    rmSync,
-    symlinkSync,
-    writeFileSync,
-} from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, resolve, sep } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawn } from 'node:child_process'
@@ -73,7 +63,8 @@ export async function buildNative(source, { development = false, output = resolv
     )
         throw new Error('Native output must be frontend/out-native or a generated integration artifact directory')
     const settings = nativeBuildSettings(source, development)
-    const cache = resolve(root, '.cache/native-build')
+    // Stage under frontend so Node and Turbopack resolve installed dependencies on every OS.
+    const cache = resolve(root, 'frontend/.cache/native-build')
     mkdirSync(cache, { recursive: true })
     const stage = mkdtempSync(resolve(cache, 'build-'))
     try {
@@ -82,7 +73,6 @@ export async function buildNative(source, { development = false, output = resolv
                 recursive: true,
                 filter: (path) => path !== resolve(root, 'frontend/src/proxy.ts'),
             })
-        symlinkSync(resolve(root, 'frontend/node_modules'), resolve(stage, 'node_modules'), 'junction')
         writeFileSync(
             resolve(stage, 'next.config.mjs'),
             `export default ${JSON.stringify({
