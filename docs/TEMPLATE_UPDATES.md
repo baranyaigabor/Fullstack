@@ -17,7 +17,7 @@ After these changes have been committed, published, and tagged by the maintainer
 
 ```bash
 # Replace TEMPLATE_TAG with an actual reviewed release tag containing copier.yml.
-copier copy --vcs-ref TEMPLATE_TAG gh:baranyaigabor/Fullstack ../my-product
+copier copy --vcs-ref TEMPLATE_TAG gh:baranyaigabor/NextStack ../my-product
 cd ../my-product
 git init
 pnpm install --frozen-lockfile
