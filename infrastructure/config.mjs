@@ -20,6 +20,14 @@ export function cloneIdentity(cwd, explicit) {
         : `${slug.slice(0, 37)}-${createHash('sha256').update(resolve(cwd)).digest('hex').slice(0, 10)}`
 }
 
+export function localDatabaseUrl(source) {
+    const user = source.POSTGRES_USER || 'starter'
+    const password = source.POSTGRES_PASSWORD || ''
+    const database = source.POSTGRES_DB || 'starter'
+    const port = source.DEV_POSTGRES_PORT || '5432'
+    return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@localhost:${port}/${encodeURIComponent(database)}`
+}
+
 export function resolveEnvironment(mode, source = process.env, cwd = process.cwd()) {
     const env = { ...source }
     env.APP_ID = cloneIdentity(cwd, env.APP_ID)

@@ -119,6 +119,10 @@ try {
     const privateEnv = readFileSync(join(product, '.env'), 'utf8')
     assert.match(privateEnv, /^APP_ID=student-app-[a-f0-9]{6}$/m)
     assert.ok(privateEnv.includes(`APP_NAME=${JSON.stringify(appName)}`))
+    assert.doesNotMatch(privateEnv, /^NEXT_PUBLIC_APP_NAME=|^NEXT_PUBLIC_APP_URL=|^BETTER_AUTH_URL=/m)
+    const configured = new URL(privateEnv.match(/^DATABASE_URL=(.*)$/m)[1])
+    assert.equal(configured.username, 'starter')
+    assert.equal(configured.pathname, '/starter')
     const loadedName = run(
         process.execPath,
         [

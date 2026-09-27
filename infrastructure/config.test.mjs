@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { cloneIdentity, resolveEnvironment } from './config.mjs'
+import { cloneIdentity, localDatabaseUrl, resolveEnvironment } from './config.mjs'
 
 test('same-named clones have distinct default identities', () => {
     assert.notEqual(cloneIdentity('/one/Fullstack'), cloneIdentity('/two/Fullstack'))
@@ -12,6 +12,32 @@ test('custom ports consistently determine public/auth URLs', () => {
     assert.equal(env.APP_URL, 'http://localhost:18080')
     assert.equal(env.BETTER_AUTH_URL, 'http://localhost:18080/api/auth')
     assert.equal(env.NEXT_PUBLIC_APP_NAME, 'Acme')
+})
+test('local database URL follows configured user, password, database, and port', () => {
+    const url = new URL(
+        localDatabaseUrl({
+            POSTGRES_USER: 'student@example',
+            POSTGRES_PASSWORD: 'a:/@?#% x',
+            POSTGRES_DB: 'my db',
+            DEV_POSTGRES_PORT: '15432',
+        }),
+    )
+    assert.equal(decodeURIComponent(url.username), 'student@example')
+    assert.equal(decodeURIComponent(url.password), 'a:/@?#% x')
+    assert.equal(decodeURIComponent(url.pathname), '/my db')
+    assert.equal(url.port, '15432')
+})
+test('application identity fields override obsolete derived values', () => {
+    const env = resolveEnvironment('development', {
+        APP_NAME: 'New Product',
+        APP_URL: 'https://product.example',
+        NEXT_PUBLIC_APP_NAME: 'Old Name',
+        NEXT_PUBLIC_APP_URL: 'https://old.example',
+        BETTER_AUTH_URL: 'https://old.example/api/auth',
+    })
+    assert.equal(env.NEXT_PUBLIC_APP_NAME, 'New Product')
+    assert.equal(env.NEXT_PUBLIC_APP_URL, 'https://product.example')
+    assert.equal(env.BETTER_AUTH_URL, 'https://product.example/api/auth')
 })
 test('database credentials are encoded without changing their values', () => {
     const env = resolveEnvironment(

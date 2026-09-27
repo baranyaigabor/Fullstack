@@ -11,11 +11,20 @@ export const HttpUrlSchema = z.url().refine((value) => {
 export const FeatureFlagSchema = z.enum(['true', 'false']).default('false')
 
 export function applicationOrigin(env: Record<string, string | undefined>): string {
-    const domain = env.APP_DOMAIN?.trim()
+    const domain =
+        (env.NODE_ENV === 'production' ? env.PROD_APP_DOMAIN : env.DEV_APP_DOMAIN)?.trim() || env.APP_DOMAIN?.trim()
+    const localPort =
+        env.NODE_ENV === 'production'
+            ? env.PROD_HTTP_PORT || env.DEV_HTTP_PORT
+            : env.DEV_HTTP_PORT || env.PROD_HTTP_PORT
     return new URL(
         domain
             ? `https://${domain}`
-            : env.APP_URL || env.NEXT_PUBLIC_APP_URL || env.BETTER_AUTH_URL || 'http://localhost:8080',
+            : env.APP_URL ||
+                  (localPort ? `http://localhost:${localPort}` : '') ||
+                  env.NEXT_PUBLIC_APP_URL ||
+                  env.BETTER_AUTH_URL ||
+                  'http://localhost:8080',
     ).origin
 }
 

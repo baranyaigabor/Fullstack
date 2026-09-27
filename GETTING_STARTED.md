@@ -29,7 +29,16 @@ The fallback identity hashes the checkout path so equal folder names are distinc
 `APP_NAME` is the common display name. `APP_URL` optionally specifies a public
 origin. `DEV_APP_DOMAIN`/`PROD_APP_DOMAIN` override `APP_DOMAIN`; a configured
 domain yields HTTPS URLs. The Compose wrapper derives auth, API host configuration,
-encoded database credentials, profiles, and public branding.
+encoded database credentials, profiles, and public branding. Public app name/URL
+and the Better Auth URL come from `APP_NAME` and `APP_URL`; old
+`NEXT_PUBLIC_APP_NAME`, `NEXT_PUBLIC_APP_URL`, and `BETTER_AUTH_URL` entries
+in an existing `.env` are ignored by the wrapper.
+
+Initialization generates the host-side `DATABASE_URL` from `POSTGRES_USER`,
+`POSTGRES_PASSWORD`, `POSTGRES_DB`, and the selected development database port.
+If you change those settings later, update `DATABASE_URL` as well for host-side
+database tools. An existing PostgreSQL volume does not automatically create a new
+user or database when these values change; migrate its data and roles deliberately.
 
 Host port bindings are configured in `.env`. `DEV_BIND_ADDRESS` controls the
 development web proxy, `DEV_INTERNAL_BIND_ADDRESS` controls the direct frontend,

@@ -12,6 +12,15 @@ test('auth and CORS share exact configurable origins', () => {
     assert.equal(applicationOrigin(env), 'http://localhost:18080')
     assert.deepEqual(trustedOrigins(env), ['http://localhost:18080', 'http://localhost:13000'])
 })
+test('direct host startup derives its origin from the selected local port', () => {
+    const env = {
+        DEV_HTTP_PORT: '18081',
+        NEXT_PUBLIC_APP_URL: 'http://localhost:8080',
+        BETTER_AUTH_URL: 'http://localhost:8080/api/auth',
+    }
+    assert.equal(applicationOrigin(env), 'http://localhost:18081')
+    assert.deepEqual(trustedOrigins(env), ['http://localhost:18081'])
+})
 test('liveness does not touch Redis or consume quotas', async () => {
     const guard = new RateLimitGuard({
         consume() {

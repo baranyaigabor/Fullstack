@@ -2,7 +2,8 @@ import { randomBytes } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:net'
 import { spawnSync } from 'node:child_process'
-import { cloneIdentity, loadEnvironment, resolveEnvironment } from './config.mjs'
+import { parseEnv } from 'node:util'
+import { cloneIdentity, loadEnvironment, localDatabaseUrl, resolveEnvironment } from './config.mjs'
 import { resolveDockerEnvironment } from './compose.mjs'
 
 const action = process.argv[2]
@@ -56,16 +57,15 @@ try {
                 DEV_STORAGE_PORT: 8333,
             }))
                 values[name] = await availablePort(start)
-            values.DATABASE_URL = `postgresql://starter:${values.POSTGRES_PASSWORD}@localhost:${values.DEV_POSTGRES_PORT}/starter`
+            const configuration = { ...parseEnv(content), ...values }
+            values.DATABASE_URL = localDatabaseUrl(configuration)
             values.CACHE_URL = `redis://localhost:${values.DEV_REDIS_PORT}`
             values.SEARCH_ENGINE_URL = `http://localhost:${values.DEV_SEARCH_PORT}`
             values.VIRUS_SCANNER_PORT = values.DEV_CLAMAV_PORT
-            values.NEXT_PUBLIC_APP_URL = `http://localhost:${values.DEV_HTTP_PORT}`
-            values.BETTER_AUTH_URL = `${values.NEXT_PUBLIC_APP_URL}/api/auth`
             for (const [key, value] of Object.entries(values))
                 content = content.replace(new RegExp(`^${key}=.*$`, 'm'), () => `${key}=${value}`)
             writeFileSync('.env', content, { flag: 'wx', mode: 0o600 })
-            console.log(`Created .env. Application: ${values.NEXT_PUBLIC_APP_URL}`)
+            console.log(`Created .env. Application: ${resolveEnvironment('development', configuration).APP_URL}`)
         }
     } else if (action === 'doctor') {
         const major = Number(process.versions.node.split('.')[0])
