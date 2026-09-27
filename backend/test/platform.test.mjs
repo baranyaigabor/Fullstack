@@ -12,22 +12,47 @@ test('auth and CORS share exact configurable origins', () => {
     assert.equal(applicationOrigin(env), 'http://localhost:18080')
     assert.deepEqual(trustedOrigins(env), ['http://localhost:18080', 'http://localhost:13000'])
 })
-test('health probes do not touch Redis or consume quotas', async () => {
+test('liveness does not touch Redis or consume quotas', async () => {
     const guard = new RateLimitGuard({
         consume() {
             throw new Error('Redis unavailable')
         },
     })
-    for (const path of ['/api/health', '/api/health/live']) {
+    const context = {
+        getType: () => 'http',
+        switchToHttp: () => ({
+            getRequest: () => ({ method: 'GET', path: '/api/health/live' }),
+            getResponse: () => ({}),
+        }),
+    }
+    assert.equal(await guard.canActivate(context), true)
+})
+test('readiness consumes a quota and rejects excess requests', async () => {
+    const consumedKeys = []
+    const guard = new RateLimitGuard({
+        consume: async (key) => {
+            consumedKeys.push(key)
+            return { allowed: false, limit: 1, count: 2, resetSeconds: 30 }
+        },
+    })
+    for (const url of ['/api/health', '/api/health?details=1']) {
+        const headers = {}
         const context = {
             getType: () => 'http',
             switchToHttp: () => ({
-                getRequest: () => ({ method: 'GET', path }),
-                getResponse: () => ({}),
+                getRequest: () => ({ method: 'GET', path: '/api/health', url, ip: '192.0.2.1' }),
+                getResponse: () => ({
+                    setHeader: (key, value) => {
+                        headers[key] = value
+                    },
+                }),
             }),
         }
-        assert.equal(await guard.canActivate(context), true)
+        await assert.rejects(() => guard.canActivate(context), { status: 429 })
+        assert.equal(headers['Retry-After'], '30')
+        assert.equal(headers['X-RateLimit-Remaining'], '0')
     }
+    assert.deepEqual(consumedKeys, ['rate-limit:192.0.2.1:GET:_api_health', 'rate-limit:192.0.2.1:GET:_api_health'])
 })
 test('ordinary routes still enforce rate limits', async () => {
     const guard = new RateLimitGuard({

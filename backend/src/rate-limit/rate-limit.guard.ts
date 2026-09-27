@@ -14,7 +14,7 @@ export class RateLimitGuard implements CanActivate {
         const http = context.switchToHttp()
         const request = http.getRequest<Request>()
         const response = http.getResponse<Response>()
-        if (request.method === 'GET' && ['/api/health', '/api/health/live'].includes(request.path)) return true
+        if (request.method === 'GET' && request.path === '/api/health/live') return true
         const routePath = typeof request.route?.path === 'string' ? request.route.path : request.path
         const key = [
             'rate-limit',

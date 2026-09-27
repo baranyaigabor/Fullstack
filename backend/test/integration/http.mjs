@@ -383,7 +383,10 @@ if (localServices)
             401,
         )
     })
-await check('health probes remain outside request quotas', async () => {
+await check('liveness stays outside request quotas while readiness is limited', async () => {
     for (let i = 0; i < 105; i++) assert.equal((await request('/api/health/live')).status, 200)
-    assert.equal((await request('/api/health')).status, 200)
+    const readiness = await request('/api/health')
+    assert.equal(readiness.status, 200)
+    assert.equal(readiness.headers.get('x-ratelimit-limit'), '1000')
+    assert.ok(Number(readiness.headers.get('x-ratelimit-remaining')) < 1000)
 })
