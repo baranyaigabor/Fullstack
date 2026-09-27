@@ -1,0 +1,40 @@
+{
+    "name": "@fullstack-starter/expo",
+    "version": "0.1.0",
+    "main": "index.ts",
+    "dependencies": {
+        "@better-auth/expo": "1.6.26",
+        "@expo/metro-runtime": "~57.0.16",
+        "better-auth": "1.6.26",
+        "expo": "~57.0.25",
+        "expo-constants": "~57.0.19",
+        "expo-linking": "~57.0.11",
+        "expo-network": "~57.0.2",
+        "expo-secure-store": "~57.0.4",
+        "expo-status-bar": "~57.0.1",
+        "expo-web-browser": "~57.0.3",
+        "react": "19.2.3",
+        "react-dom": "19.2.3",
+        "react-native": "0.86.3",
+        "react-native-web": "^0.21.2",
+        "expo-crypto": "~57.0.3",
+        "@fullstack-starter/shared": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/react": "~19.2.2",
+        "typescript": "~6.0.3"
+    },
+    "scripts": {
+        "start": "pnpm --dir ../.. build:shared && expo start --clear",
+        "android": "pnpm --dir ../.. build:shared && expo start --android --clear",
+        "ios": "pnpm --dir ../.. build:shared && expo start --ios --clear",
+        "web": "pnpm --dir ../.. build:shared && expo start --web --clear",
+        "dev": "pnpm --dir ../.. build:shared && expo start --clear",
+        "typecheck": "pnpm --dir ../.. build:shared && tsc --noEmit",
+        "export:web": "pnpm --dir ../.. build:shared && expo export --platform web --clear",
+        "build:android": "node ../../infrastructure/expo.mjs android",
+        "build:ios": "node ../../infrastructure/expo.mjs ios",
+        "eas-build-post-install": "pnpm --dir ../.. build:shared"
+    },
+    "private": true
+}

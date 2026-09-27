@@ -1,36 +1,32 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Redis } from 'ioredis';
+import { Injectable, OnModuleDestroy } from '@nestjs/common'
+import { Redis } from 'ioredis'
 
 @Injectable()
 export class CacheService implements OnModuleDestroy {
-  public readonly client: Redis;
+    public readonly client: Redis
 
-  constructor() {
-    this.client = new Redis(process.env.CACHE_URL!);
-  }
-
-  get(key: string) {
-    return this.client.get(key);
-  }
-
-  async set(key: string, value: string, ttlSeconds?: number) {
-    if (ttlSeconds) {
-      return this.client.set(key, value, 'EX', ttlSeconds);
+    constructor() {
+        this.client = new Redis(process.env.CACHE_URL!)
     }
-    return this.client.set(key, value);
-  }
 
-  async del(key: string) {
-    return this.client.del(key);
-  }
+    get(key: string) {
+        return this.client.get(key)
+    }
 
-  async consumeRollingWindow(
-    key: string,
-    windowSeconds: number,
-    limit: number,
-  ) {
-    const result = (await this.client.eval(
-      `
+    async set(key: string, value: string, ttlSeconds?: number) {
+        if (ttlSeconds) {
+            return this.client.set(key, value, 'EX', ttlSeconds)
+        }
+        return this.client.set(key, value)
+    }
+
+    async del(key: string) {
+        return this.client.del(key)
+    }
+
+    async consumeRollingWindow(key: string, windowSeconds: number, limit: number) {
+        const result = (await this.client.eval(
+            `
       local time = redis.call('TIME')
       local now = (tonumber(time[1]) * 1000) + math.floor(tonumber(time[2]) / 1000)
       local window = tonumber(ARGV[1]) * 1000
@@ -60,21 +56,21 @@ export class CacheService implements OnModuleDestroy {
 
       return { allowed, current, math.ceil(resetMs / 1000) }
       `,
-      1,
-      key,
-      windowSeconds.toString(),
-      limit.toString(),
-      crypto.randomUUID(),
-    )) as [number, number, number];
+            1,
+            key,
+            windowSeconds.toString(),
+            limit.toString(),
+            crypto.randomUUID(),
+        )) as [number, number, number]
 
-    return {
-      allowed: result[0] === 1,
-      count: result[1],
-      resetSeconds: result[2],
-    };
-  }
+        return {
+            allowed: result[0] === 1,
+            count: result[1],
+            resetSeconds: result[2],
+        }
+    }
 
-  async onModuleDestroy() {
-    await this.client.quit();
-  }
+    async onModuleDestroy() {
+        await this.client.quit()
+    }
 }

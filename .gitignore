@@ -1,8 +1,4 @@
 node_modules/
-.pnp/
-.pnp.*
-jspm_packages/
-bower_components/
 .pnpm-store/
 
 .env
@@ -20,7 +16,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 *.out
 
 *.tsbuildinfo
@@ -35,27 +30,18 @@ debug/
 .tmp/
 .temp/
 .next/
-.nuxt/
-.svelte-kit/
 .turbo/
-.vercel/
 coverage/
-storybook-static/
 
 .cache/
-.parcel-cache/
 .eslintcache
 .stylelintcache
 *.cache
 
-jest-cache/
-jest-results.json
-coverage-final.json
 
 *.pid
 *.seed
 *.pid.lock
-*.lock-wscript
 
 package-lock.json
 yarn.lock
@@ -99,3 +85,24 @@ desktop.ini
 *.old
 *.orig
 *.rej
+
+# Database backups contain private data.
+backups/
+*.dump
+
+# System Stats agent identity and account credentials.
+statsd/
+
+# Generated integration/browser artifacts
+test-results/
+playwright-report/
+
+**/out-native/
+
+# Generated Electron configuration, bundled renderer, and installers
+desktop/.generated/
+desktop/renderer/
+desktop/out/
+desktop/dist/
+
+apps/expo-app/.generated/

@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
-
 set -eu
-
 cd "$(dirname "$0")"
-
-if [ ! -f .env ]; then
-  cp .env.example .env
-fi
-
+node infrastructure/setup.mjs init
 pnpm install --frozen-lockfile
+pnpm project:doctor
+./statsd.sh
 pnpm dev:up

@@ -1,7 +1,7 @@
-export type VirusScanStatus = 'clean' | 'infected';
+export type VirusScanStatus = 'clean' | 'infected'
 
 export type VirusScanResult = {
-  status: VirusScanStatus;
-  signature?: string;
-  raw: string;
-};
+    status: VirusScanStatus
+    signature?: string
+    raw: string
+}

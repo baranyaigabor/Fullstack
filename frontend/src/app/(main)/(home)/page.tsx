@@ -1,27 +1,23 @@
-import ExperienceSection from '@/components/home/HomeExperienceSection';
-import FaqSection from '@/components/home/HomeFaqSection';
-import FeatureSection from '@/components/home/HomeFeatureSection';
-import HomeHeroSection from '@/components/home/HomeHeroSection';
-import { homePageMetadata } from '@/lib/metadata';
-import { structuredData } from '@/lib/constants';
+import Link from 'next/link'
+import { buttonVariants } from '@/components/ui/button'
+import { homePageMetadata } from '@/lib/metadata'
+import { siteName, siteDescription } from '@/lib/constants'
 
-export const metadata = homePageMetadata;
+export const metadata = homePageMetadata
 
 export default function HomePage() {
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-
-      <div className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-20 px-6 pb-10 pt-32 sm:pt-28">
-        <HomeHeroSection />
-        <FeatureSection />
-        <ExperienceSection />
-        <FaqSection />
-      </div>
-    </>
-  );
+    return (
+        <main className='mx-auto flex min-h-dvh w-full max-w-4xl flex-col justify-center gap-6 px-6 pb-16 pt-32'>
+            <h1 className='text-4xl font-semibold tracking-tight'>{siteName}</h1>
+            <p className='text-muted-foreground'>{siteDescription}</p>
+            <div className='flex flex-wrap gap-3'>
+                <Link href='/register' className={buttonVariants()}>
+                    Create an account
+                </Link>
+                <Link href='/profile' className={buttonVariants({ variant: 'outline' })}>
+                    View profile
+                </Link>
+            </div>
+        </main>
+    )
 }

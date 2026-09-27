@@ -1,8 +1,8 @@
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
-import { forgotPasswordPageMetadata } from '@/lib/metadata';
+import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm'
+import { forgotPasswordPageMetadata } from '@/lib/metadata'
 
-export const metadata = forgotPasswordPageMetadata;
+export const metadata = forgotPasswordPageMetadata
 
 export default function ForgotPasswordPage() {
-  return <ForgotPasswordForm />;
+    return <ForgotPasswordForm />
 }

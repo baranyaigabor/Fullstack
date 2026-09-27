@@ -31,3 +31,19 @@ README.md
 LICENSE
 GETTING_STARTED.md
 CLOUDFLARE_TUNNEL.md
+
+backups
+**/*.dump
+
+# Generated integration/browser artifacts
+test-results/
+playwright-report/
+.cache/
+
+**/out-native/
+
+# Desktop projects are host/CI build inputs, not container context inputs
+desktop/
+
+statsd/
+apps/expo-app/.generated/
